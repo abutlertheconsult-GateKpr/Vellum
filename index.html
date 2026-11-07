@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#23282b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PDF Studio">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>PDF Studio</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-tool="select">
+<header id="bar">
+  <button id="open">Open PDF</button>
+  <input type="file" id="file" accept="application/pdf" hidden>
+  <span class="sep"></span>
+  <button data-tool="select" class="on">Select</button>
+  <button data-tool="text">Text</button>
+  <button data-tool="highlight">Highlight</button>
+  <button data-tool="rect">Box</button>
+  <button data-tool="ellipse">Oval</button>
+  <button data-tool="arrow">Arrow</button>
+  <span class="sep"></span>
+  <input type="color" id="color" value="#d92d20" title="Colour">
+  <button id="del">Delete</button>
+  <span class="sep"></span>
+  <button id="zout">−</button><span id="zoom">100%</span><button id="zin">+</button>
+  <span class="sep"></span>
+  <button id="settingsBtn">Settings</button>
+  <button id="save" class="primary">Save PDF</button>
+</header>
+<main id="pages"><p id="empty">Tap “Open PDF” to start.</p></main>
+<div id="toast" hidden></div>
+
+<dialog id="settings" class="dlg">
+  <h2>Settings</h2>
+  <section>
+    <h3>Save location</h3>
+    <p id="folderName" class="big">Not set</p>
+    <div class="row"><button id="pickFolder">Choose folder</button><button id="clearFolder">Clear</button></div>
+    <p id="folderNote" class="note"></p>
+  </section>
+  <section>
+    <h3>Install</h3>
+    <p id="installNote" class="note"></p>
+    <button id="install">Install app</button>
+  </section>
+  <div class="row end"><button id="closeSettings" class="primary">Done</button></div>
+</dialog>
+
+<dialog id="saveDlg" class="dlg">
+  <h2>Save PDF</h2>
+  <p id="saveName" class="note"></p>
+  <div class="stack">
+    <button id="saveHere" class="primary"></button>
+    <button id="saveBrowse">Browse…</button>
+    <button id="saveShare">Download</button>
+    <button id="saveCancel">Cancel</button>
+  </div>
+  <p id="saveMsg" class="note"></p>
+</dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="js/state.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/viewer.js"></script>
+<script src="js/tools.js"></script>
+<script src="js/export.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
