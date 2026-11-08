@@ -1,7 +1,7 @@
 // Makes the app work offline. Change CACHE's version number when you want every device to refresh its saved copy.
-const CACHE = 'pdfstudio-v2';
+const CACHE = 'pdfstudio-v4';
 const CORE = ['./', 'index.html', 'manifest.webmanifest', 'css/styles.css',
-  'js/state.js', 'js/storage.js', 'js/viewer.js', 'js/tools.js', 'js/export.js', 'js/settings.js', 'js/app.js',
+  'js/state.js', 'js/storage.js', 'js/viewer.js', 'js/tools.js', 'js/export.js', 'js/forms.js', 'js/settings.js', 'js/gestures.js', 'js/app.js',
   'icons/icon-192.png', 'icons/icon-512.png'];
 const LIBS = [
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',

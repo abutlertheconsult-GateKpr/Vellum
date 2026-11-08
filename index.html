@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#23282b">
+<meta name="theme-color" content="#0e0e0f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="PDF Studio">
@@ -13,26 +13,64 @@
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body data-tool="select">
-<header id="bar">
-  <button id="open">Open PDF</button>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-open" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="i-select" viewBox="0 0 24 24"><path d="M5 3l14 7-6 2-2 6z"/></symbol>
+  <symbol id="i-fill" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12l3 3 5-6"/></symbol>
+  <symbol id="i-text" viewBox="0 0 24 24"><path d="M5 6V5h14v1M12 5v14M9 19h6"/></symbol>
+  <symbol id="i-hi" viewBox="0 0 24 24"><path d="M15 5l4 4-9 9H6v-4zM4 21h16"/></symbol>
+  <symbol id="i-shapes" viewBox="0 0 24 24"><rect x="4" y="9" width="11" height="11" rx="1.5"/><circle cx="15" cy="9" r="5"/></symbol>
+  <symbol id="i-rect" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="2"/></symbol>
+  <symbol id="i-oval" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="8" ry="6"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 19L19 5M10 5h9v9"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></symbol>
+  <symbol id="i-set" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="12" cy="19" r="1.2"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+</svg>
+
+<header id="top">
+  <button class="ib" id="open" title="Open a PDF" aria-label="Open a PDF"><svg class="ic"><use href="#i-open"/></svg></button>
   <input type="file" id="file" accept="application/pdf" hidden>
-  <span class="sep"></span>
-  <button data-tool="select" class="on">Select</button>
-  <button data-tool="text">Text</button>
-  <button data-tool="highlight">Highlight</button>
-  <button data-tool="rect">Box</button>
-  <button data-tool="ellipse">Oval</button>
-  <button data-tool="arrow">Arrow</button>
-  <span class="sep"></span>
-  <input type="color" id="color" value="#d92d20" title="Colour">
-  <button id="del">Delete</button>
-  <span class="sep"></span>
-  <button id="zout">−</button><span id="zoom">100%</span><button id="zin">+</button>
-  <span class="sep"></span>
-  <button id="settingsBtn">Settings</button>
-  <button id="save" class="primary">Save PDF</button>
+  <span id="docname">Studio</span>
+  <button class="ib" id="moreBtn" title="More" aria-label="More"><svg class="ic"><use href="#i-more"/></svg></button>
 </header>
-<main id="pages"><p id="empty">Tap “Open PDF” to start.</p></main>
+
+<div id="menu" hidden>
+  <div class="zrow">
+    <button class="ib" id="zout" aria-label="Zoom out"><svg class="ic"><use href="#i-minus"/></svg></button>
+    <span id="zoom">100%</span>
+    <button class="ib" id="zin" aria-label="Zoom in"><svg class="ic"><use href="#i-plus"/></svg></button>
+  </div>
+  <button class="item" id="settingsBtn"><svg class="ic"><use href="#i-set"/></svg>Settings</button>
+</div>
+
+<main id="pages">
+  <div id="empty"><h1>Begin with a document.</h1><p>Open a PDF to fill it in or mark it up.</p><button id="open2">Choose a file</button></div>
+</main>
+
+<div id="float">
+  <div id="tray">
+    <button class="ib" data-tool="rect" title="Box" aria-label="Box"><svg class="ic"><use href="#i-rect"/></svg></button>
+    <button class="ib" data-tool="ellipse" title="Oval" aria-label="Oval"><svg class="ic"><use href="#i-oval"/></svg></button>
+    <button class="ib" data-tool="arrow" title="Arrow" aria-label="Arrow"><svg class="ic"><use href="#i-arrow"/></svg></button>
+  </div>
+  <div id="ctx">
+    <label class="ib" title="Colour"><input type="color" id="color" value="#d92d20"></label>
+    <button class="ib" id="del" title="Delete" aria-label="Delete"><svg class="ic"><use href="#i-trash"/></svg></button>
+  </div>
+</div>
+
+<nav id="dock">
+  <button class="tab on" data-tool="select"><svg class="ic"><use href="#i-select"/></svg>Select</button>
+  <button class="tab" data-tool="fill"><svg class="ic"><use href="#i-fill"/></svg>Fill</button>
+  <button class="tab" data-tool="text"><svg class="ic"><use href="#i-text"/></svg>Text</button>
+  <button class="tab" data-tool="highlight"><svg class="ic"><use href="#i-hi"/></svg>Highlight</button>
+  <button class="tab" id="shapesTab"><svg class="ic"><use href="#i-shapes"/></svg>Shapes</button>
+  <button class="tab" id="save"><svg class="ic"><use href="#i-save"/></svg>Save</button>
+</nav>
 <div id="toast" hidden></div>
 
 <dialog id="settings" class="dlg">
@@ -52,8 +90,12 @@
 </dialog>
 
 <dialog id="saveDlg" class="dlg">
-  <h2>Save PDF</h2>
+  <h2>Save</h2>
   <p id="saveName" class="note"></p>
+  <div id="formMode">
+    <h3>Form answers</h3>
+    <div class="seg"><button id="modeEdit" class="on">Keep editable</button><button id="modeLock">Lock in</button></div>
+  </div>
   <div class="stack">
     <button id="saveHere" class="primary"></button>
     <button id="saveBrowse">Browse…</button>
@@ -69,8 +111,10 @@
 <script src="js/storage.js"></script>
 <script src="js/viewer.js"></script>
 <script src="js/tools.js"></script>
+<script src="js/forms.js"></script>
 <script src="js/export.js"></script>
 <script src="js/settings.js"></script>
+<script src="js/gestures.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>
