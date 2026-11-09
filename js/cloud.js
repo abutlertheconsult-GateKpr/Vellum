@@ -4,15 +4,25 @@ App.cloud = {
   CHUNK: 700000,
   esc: s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])),
 
+  // Says in plain words what is wrong with the Firebase setup, or null if it looks fine.
+  problem() {
+    const c = this.cfg || {};
+    if (!window.firebase) return 'Vellum couldn’t load Firebase. Check your connection, or turn off an ad blocker, then reload.';
+    if (!c.apiKey) return 'Vellum can’t find your Firebase settings. Open js/firebase-config.js. It must still start with “window.VELLUM_FIREBASE = {” and have your values inside it. If you replaced the whole file with Firebase’s own code, put the original wrapper back and paste only the values.';
+    if (/^PASTE/.test(c.apiKey) || /^PASTE/.test(c.projectId || '')) return 'js/firebase-config.js still has the PASTE_ placeholders. Replace each one with your value, upload the file, then reload.';
+    if (!c.projectId || !c.appId) return 'js/firebase-config.js is missing the projectId or appId.';
+    return null;
+  },
   init() {
     if (this.db) return true;
-    if (!window.firebase || !this.cfg.apiKey || /^PASTE/.test(this.cfg.apiKey)) return false;
-    firebase.initializeApp(this.cfg); this.auth = firebase.auth(); this.db = firebase.firestore();
+    if (this.problem()) return false;
+    try { if (!firebase.apps.length) firebase.initializeApp(this.cfg); this.auth = firebase.auth(); this.db = firebase.firestore(); }
+    catch (e) { this.initError = e.message; return false; }
     return true;
   },
   user() { return new Promise(ok => { const off = this.auth.onAuthStateChanged(u => { off(); ok(u); }); }); },
   async requireUser() {
-    if (!this.init()) throw new Error('Firebase isn’t set up yet. See SETUP.md, then fill in js/firebase-config.js.');
+    if (!this.init()) throw new Error((this.problem() || this.initError || 'Firebase couldn’t start.') + ' (See SETUP.md.)');
     return (await this.user()) || this.askLogin();
   },
   askLogin() {
