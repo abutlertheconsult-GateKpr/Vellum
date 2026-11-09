@@ -1,0 +1,20 @@
+/* The "adopt your signature" box, shared by the editor and the signing page. */
+dialog.sp{width:min(94vw,520px);padding:22px;border:1px solid rgba(255,255,255,.1);border-radius:24px;color:#f3efe8;background:rgba(23,21,19,.97);box-shadow:0 30px 80px rgba(0,0,0,.6);font:15px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}
+dialog.sp::backdrop{background:rgba(5,5,6,.65)}
+.sp h2{margin:0 0 12px;font:300 24px ui-serif,Georgia,serif}
+.sp-tabs{display:flex;gap:6px;margin-bottom:12px}
+.sp button{font:inherit;color:inherit;padding:10px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);cursor:pointer}
+.sp button.on{color:#d4b483;background:rgba(212,180,131,.16);border-color:rgba(212,180,131,.6)}
+.sp-tabs button{flex:1}
+.sp canvas{display:block;width:100%;aspect-ratio:3/1;background:#fff;border-radius:14px;touch-action:none;cursor:crosshair}
+.sp-clear{margin-top:8px}
+.sp-name{width:100%;padding:12px 14px;font:inherit;font-size:18px;color:#f3efe8;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px}
+.sp-fonts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.sp-fonts button{padding:12px 10px;font-size:26px;line-height:1.1;color:#11152e;background:#fff;border-radius:12px;text-align:center;overflow:hidden;white-space:nowrap}
+.sp-fonts button small{display:block;margin-top:4px;font:11px system-ui,sans-serif;color:#666}
+.sp-fonts button.on{outline:3px solid #d4b483;background:#fff8e8}
+.sp label{display:flex;gap:10px;align-items:center;margin-top:12px;color:#a39d92;font-size:.92rem}
+.sp-note{color:#a39d92;font-size:.85rem;margin:10px 0 0}
+.sp-row{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.sp-ok{background:#d4b483!important;color:#1a1612!important;border-color:#d4b483!important;font-weight:600}
+.sp-ok:disabled{opacity:.4}
