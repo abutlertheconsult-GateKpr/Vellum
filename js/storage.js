@@ -18,6 +18,7 @@ App.store = {
   },
   saveSoon() {
     clearTimeout(this.t);
+    if (App.sec && (App.sec.user || App.sec.owner)) return; // protected files are not kept on this device
     this.t = setTimeout(() => this.put('doc', { name: App.name, bytes: App.bytes, annots: App.annots, fields: App.fields }), 400);
   }
 };

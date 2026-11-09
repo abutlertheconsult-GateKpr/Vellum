@@ -65,6 +65,7 @@ App.settings = {
   // Opens the Save box. The PDF is built first so the buttons can act right away.
   async save() {
     if (!App.bytes) return;
+    await App.designer.bake();
     const variants = { edit: await App.exporter.make({ flatten: false }) };
     if (App.hasForms) variants.lock = await App.exporter.make({ flatten: true });
     const self = this;
@@ -72,7 +73,7 @@ App.settings = {
     this.pending = { variants, name: App.name.replace(/\.pdf$/i, '') + '-edited.pdf', get bytes() { return variants[self.mode] || variants.edit; } };
     $('formMode').hidden = !App.hasForms;
     this.paintMode();
-    $('saveName').textContent = this.pending.name;
+    $('saveName').textContent = this.pending.name + (App.sec.user || App.sec.owner ? '  ·  password protected' : '');
     $('saveMsg').textContent = '';
     $('saveHere').hidden = !(this.folder && this.hasDir);
     if (this.folder) $('saveHere').textContent = 'Save to “' + this.folder.name + '”';
@@ -84,6 +85,16 @@ App.settings = {
   paintMode() {
     $('modeEdit').classList.toggle('on', this.mode === 'edit');
     $('modeLock').classList.toggle('on', this.mode === 'lock');
+  },
+
+  // Offer a finished file (like a signed copy) with the same save choices.
+  offer(bytes, name) {
+    this.pending = { variants: { edit: bytes }, name, get bytes() { return bytes; } };
+    this.mode = 'edit'; $('formMode').hidden = true; $('saveName').textContent = name; $('saveMsg').textContent = '';
+    $('saveHere').hidden = !(this.folder && this.hasDir); if (this.folder) $('saveHere').textContent = 'Save to “' + this.folder.name + '”';
+    $('saveBrowse').hidden = !(this.hasSaveAs || this.hasDir);
+    $('saveShare').textContent = this.touch && navigator.canShare ? 'Share or save to Files' : 'Download';
+    $('saveDlg').showModal();
   },
 
   async run(fn) {

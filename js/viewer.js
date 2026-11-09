@@ -3,8 +3,9 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
 
 App.viewer = {
   async load(bytes) {
+    const doc = await App.openPdf(bytes);
     App.bytes = bytes.slice(0);
-    App.pdf = await pdfjsLib.getDocument({ data: bytes.slice(0) }).promise;
+    App.pdf = doc;
     const first = await App.pdf.getPage(1);
     const w = first.getViewport({ scale: 1 }).width;
     App.scale = Math.min(1.5, (window.innerWidth - 16) / w);
@@ -40,6 +41,14 @@ App.viewer = {
       await App.forms.build(page, vp, forms);
     }
     App.counter && App.counter();
+  },
+  // Swap in new PDF data (after page changes) without resetting zoom.
+  async reload(bytes) {
+    App.bytes = bytes.slice(0);
+    if (App.pdf) await App.pdf.destroy();
+    App.pdf = await App.openPdf(bytes);
+    App.hasForms = false;
+    await this.render();
   },
   // Zoom while keeping the spot under your fingers (cx, cy) in place.
   async zoomTo(s, cx = innerWidth / 2, cy = innerHeight / 2) {
