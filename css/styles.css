@@ -1,4 +1,4 @@
-/* PDF Studio look. Change the colours here and everything follows. */
+/* Vellum look. Change the colours here and everything follows. */
 :root{
   --bg:#0b0b0c; --glass:rgba(26,24,22,.66); --line:rgba(255,255,255,.09);
   --text:#f3efe8; --mute:#a39d92; --gold:#d4b483; --gold-soft:rgba(212,180,131,.16);
@@ -17,7 +17,7 @@ body{font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--te
 #docname{flex:1;min-width:0;padding:0 8px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font:400 15px var(--serif);letter-spacing:.03em;color:var(--text)}
 #dock{position:fixed;inset:auto 0 0 0;z-index:10;display:flex;justify-content:safe center;gap:2px;overflow-x:auto;scrollbar-width:none;padding:6px 6px calc(6px + env(safe-area-inset-bottom));
   background:rgba(14,14,15,.95);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid var(--line)}
-.tab{flex:0 0 64px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 2px;border:0;border-radius:14px;background:none;
+.tab{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 2px;border:0;border-radius:14px;background:none;
   color:var(--mute);font:500 11px system-ui,sans-serif;cursor:pointer;transition:background .2s,color .2s}
 .tab:hover{color:var(--text)}
 .tab.on{color:var(--gold);background:var(--gold-soft)}
@@ -25,7 +25,7 @@ body{font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--te
 #tray,#ctx,.trayx{display:none;gap:2px;padding:6px;background:var(--glass);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
   border:1px solid var(--line);border-radius:22px;box-shadow:0 14px 40px rgba(0,0,0,.5)}
 .tray-shapes #tray{display:flex}
-.tray-img #trayImg,.tray-link #trayLink,.tray-field #trayField,.tray-sign #traySign{display:flex}
+.tray-img #trayImg,.tray-link #trayLink,.tray-field #trayField,.tray-sign #traySign,.tray-more #trayMore{display:flex}
 body:is([data-tool=text],[data-tool=highlight],[data-tool=rect],[data-tool=ellipse],[data-tool=arrow]) #ctx,.has-sel #ctx{display:flex}
 #menu{position:fixed;top:calc(58px + env(safe-area-inset-top));right:10px;z-index:20;min-width:200px;padding:8px;background:rgba(22,20,18,.96);
   border:1px solid var(--line);border-radius:18px;box-shadow:0 20px 50px rgba(0,0,0,.6)}
@@ -193,3 +193,18 @@ body.noscroll{overflow:hidden}
 .srow{display:flex;flex-direction:column;gap:2px;margin:12px 0}
 .lrow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid var(--line)}
 .lrow div{display:flex;gap:6px}
+
+/* undo/redo, templates */
+.ib:disabled{opacity:.3;cursor:default}
+#homeTpl{margin-top:28px;text-align:left}
+#homeTpl h3{margin:0 0 8px;font:500 11px system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.tpl{display:flex;gap:6px;margin-bottom:6px}
+.tpl button{font:inherit;color:var(--text);background:var(--glass);border:1px solid var(--line);border-radius:14px;padding:12px 14px;cursor:pointer}
+.tpl button[data-use]{flex:1;text-align:left}
+.tpl .x{color:#e58a7e}
+#tplPickList button{display:block;width:100%;margin-bottom:6px;text-align:left}
+
+/* home logo */
+#home .logo{display:block;width:min(56vw,250px);height:auto;margin:0 auto 6px;animation:logoIn .9s var(--ease) both;filter:drop-shadow(0 12px 40px rgba(212,180,131,.18))}
+@keyframes logoIn{from{opacity:0;transform:translateY(10px) scale(.96)}}
+@media (max-height:640px){#home .logo{width:min(34vh,200px)}}
