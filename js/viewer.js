@@ -13,6 +13,7 @@ App.viewer = {
     App.hasForms = false;
     await this.render();
     if (App.hasForms) App.setTool('fill');
+    App.history.reset();
   },
   async render() {
     const box = document.getElementById('pages');
@@ -49,6 +50,7 @@ App.viewer = {
     App.pdf = await App.openPdf(bytes);
     App.hasForms = false;
     await this.render();
+    App.history.reset();
   },
   // Zoom while keeping the spot under your fingers (cx, cy) in place.
   async zoomTo(s, cx = innerWidth / 2, cy = innerHeight / 2) {

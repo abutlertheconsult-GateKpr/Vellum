@@ -5,10 +5,11 @@ App.setTool = t => {
   document.body.dataset.tool = t;
   document.querySelectorAll('button[data-tool]').forEach(b => b.classList.toggle('on', b.dataset.tool === t));
   $('shapesTab').classList.toggle('on', ['rect', 'ellipse', 'arrow'].includes(t));
-  ['shapes', 'img', 'link', 'field', 'sign'].forEach(x => document.body.classList.remove('tray-' + x));
+  ['shapes', 'img', 'link', 'field', 'sign', 'more'].forEach(x => document.body.classList.remove('tray-' + x));
   $('linkTab').classList.toggle('on', ['link', 'iconbtn'].includes(t));
   $('fieldTab').classList.toggle('on', t.startsWith('f-'));
   $('signTab').classList.toggle('on', t.startsWith('sig-'));
+  $('moreTab').classList.toggle('on', ['note', 'rect', 'ellipse', 'arrow', 'link', 'iconbtn'].includes(t) || t.startsWith('f-'));
 };
 
 document.querySelectorAll('button[data-tool]').forEach(b => b.onclick = async () => { if (b.dataset.tool === 'fill') await App.designer.bake(); App.setTool(b.dataset.tool); });
@@ -50,7 +51,7 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catc
 // Top-right menu and the Shapes tray.
 const tray = name => {
   const c = 'tray-' + name, was = document.body.classList.contains(c);
-  ['shapes', 'img', 'link', 'field', 'sign'].forEach(x => document.body.classList.remove('tray-' + x));
+  ['shapes', 'img', 'link', 'field', 'sign', 'more'].forEach(x => document.body.classList.remove('tray-' + x));
   document.body.classList.toggle(c, !was);
 };
 $('shapesTab').onclick = () => tray('shapes');
@@ -58,6 +59,8 @@ $('imgTab').onclick = () => tray('img');
 $('linkTab').onclick = () => tray('link');
 $('fieldTab').onclick = () => tray('field');
 $('signTab').onclick = () => tray('sign');
+$('moreTab').onclick = () => tray('more');
+$('pagesTab').addEventListener('click', () => document.body.classList.remove('tray-more'));
 App.newBlank = async () => {
   const doc = await PDFLib.PDFDocument.create(); doc.addPage([612, 792]);
   Object.assign(App, { name: 'Untitled.pdf', annots: {}, fields: {}, selected: null });
@@ -78,6 +81,7 @@ App.closeDoc = async () => {
   Object.assign(App, { pdf: null, bytes: null, annots: {}, fields: {}, selected: null, hasForms: false, name: 'document.pdf' });
   document.body.classList.remove('has-sel', 'has-text');
   App.resetSec();
+  App.history.reset();
   $('pages').innerHTML = ''; $('pages').appendChild(emptyEl);
   $('docname').textContent = 'Vellum'; $('file').value = '';
   App.setTool('select'); scrollTo(0, 0);

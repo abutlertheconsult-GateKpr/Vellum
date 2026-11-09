@@ -33,7 +33,7 @@ App.settings = {
     $('settingsBtn').onclick = () => $('settings').showModal();
     $('closeSettings').onclick = () => $('settings').close();
     $('pickFolder').onclick = async () => {
-      try { this.folder = await showDirectoryPicker({ mode: 'readwrite', id: 'pdfstudio' }); await App.store.put('folder', this.folder); this.paint(); } catch (e) {}
+      try { this.folder = await showDirectoryPicker({ mode: 'readwrite', id: 'vellum' }); await App.store.put('folder', this.folder); this.paint(); } catch (e) {}
     };
     $('clearFolder').onclick = async () => { this.folder = null; await App.store.put('folder', null); this.paint(); };
     window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); this.deferred = e; this.paintInstall(); });
