@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0e0e0f">
+<meta name="robots" content="noindex">
+<title>Sign a document</title>
+<link rel="stylesheet" href="css/sigpad.css">
+<link rel="stylesheet" href="css/signer.css">
+</head>
+<body>
+<main id="msg" class="card" hidden><h1 id="msgT"></h1><p id="msgP"></p></main>
+<main id="intro" class="card" hidden>
+  <h1>Vellum</h1>
+  <p id="hello"></p>
+  <label class="chk"><input type="checkbox" id="consent"> I agree to use electronic records and signatures.</label>
+  <button id="start" class="go" disabled>Review and sign</button>
+</main>
+<header id="bar" hidden><span id="left"></span><button id="next">Next</button><button id="finish" class="go" disabled>Finish</button></header>
+<div id="pages" hidden></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/sigpad.js"></script>
+<script src="js/signer.js"></script>
+</body>
+</html>

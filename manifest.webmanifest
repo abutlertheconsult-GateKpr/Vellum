@@ -1,6 +1,6 @@
 {
-  "name": "PDF Studio",
-  "short_name": "PDF Studio",
+  "name": "Vellum",
+  "short_name": "Vellum",
   "description": "View and mark up PDFs: text, highlights, shapes and arrows.",
   "start_url": "./",
   "scope": "./",
