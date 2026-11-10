@@ -1,4 +1,4 @@
-export const VELLUM_FIREBASE = {
+window.VELLUM_FIREBASE = {
   firebaseConfig: {
     apiKey: "AIzaSyASH0y_tPaio4GFze-OaRufeyJ06__v1Fg",
     authDomain: "vellum-b07d3.firebaseapp.com",
