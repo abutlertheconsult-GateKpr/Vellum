@@ -1,5 +1,5 @@
 window.VELLUM_FIREBASE = {
-  firebaseConfig: {
+  const firebaseConfig: {
   apiKey: "AIzaSyASH0y_tPaio4GFze-OaRufeyJ06__v1Fg",
   authDomain: "vellum-b07d3.firebaseapp.com",
   projectId: "vellum-b07d3",
