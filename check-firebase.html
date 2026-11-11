@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Vellum: check Firebase</title>
+<style>
+  body{margin:0;padding:24px 16px 60px;font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;color:#f3efe8;background:#0b0b0c}
+  main{max-width:640px;margin:0 auto}
+  h1{font:300 28px ui-serif,Georgia,serif;margin:0 0 4px}
+  .sub{color:#a39d92;margin:0 0 20px}
+  .row{display:flex;gap:12px;padding:12px 14px;margin-bottom:8px;border:1px solid rgba(255,255,255,.1);border-radius:14px;background:#151416}
+  .ic{flex:none;width:24px;font-weight:700}
+  .ok .ic{color:#9be38f}.bad .ic{color:#ff8a7a}.warn .ic{color:#f2c46d}.wait .ic{color:#a39d92}
+  .t b{display:block}.t span{color:#a39d92;font-size:.92rem;display:block;margin-top:2px;white-space:pre-wrap;word-break:break-word}
+  .bad .t span{color:#f3efe8}
+  button{font:inherit;font-weight:600;padding:12px 22px;border:0;border-radius:99px;background:#d4b483;color:#1a1612;cursor:pointer;margin-top:10px}
+  #sum{margin:16px 0;padding:14px;border-radius:14px;font-weight:600}
+  #sum.ok{background:rgba(155,227,143,.12);color:#9be38f}#sum.bad{background:rgba(255,138,122,.12);color:#ff8a7a}
+</style>
+</head>
+<body>
+<main>
+  <h1>Check Firebase</h1>
+  <p class="sub">This only looks. It creates nothing and changes nothing. You can delete this file when you are done.</p>
+  <div id="list"></div>
+  <div id="sum" hidden></div>
+  <button id="copy" hidden>Copy results</button> <button id="help" hidden>Copy help prompt</button> <button id="again">Run again</button>
+</main>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+let lines = [];
+const show = (state, title, detail) => {
+  const mark = { ok: '✓', bad: '✗', warn: '!', wait: '…' }[state];
+  const el = document.createElement('div'); el.className = 'row ' + state;
+  el.innerHTML = `<div class="ic">${mark}</div><div class="t"><b></b><span></span></div>`;
+  el.querySelector('b').textContent = title; el.querySelector('span').textContent = detail || '';
+  $('list').appendChild(el); lines.push(`${mark} ${title}${detail ? '\n   ' + detail : ''}`); return el;
+};
+const timeout = (p, ms) => Promise.race([p, new Promise((_, no) => setTimeout(() => no({ code: 'timeout' }), ms))]);
+const loadConfig = () => new Promise(ok => {
+  delete window.VELLUM_FIREBASE;
+  const s = document.createElement('script'); s.src = 'js/firebase-config.js?' + Date.now();
+  s.onload = () => ok(true); s.onerror = () => ok(false); document.head.appendChild(s);
+});
+
+async function run() {
+  $('list').innerHTML = ''; lines = []; $('sum').hidden = true; $('copy').hidden = true;
+  let failed = false; const bad = (t, d) => { failed = true; show('bad', t, d); };
+
+  // 1. Firebase's own tools
+  if (!window.firebase) { bad('Firebase’s tools did not load', 'Something is blocking them: an ad blocker, a work or school network, or no internet. Turn the blocker off, or try another network, then run this again.'); return end(failed); }
+  show('ok', 'Firebase’s tools loaded');
+
+  // 2. The settings file, fresh from the server
+  if (!(await loadConfig())) { bad('Could not load js/firebase-config.js', 'The file is missing or in the wrong folder. It must sit in the “js” folder next to the other files.'); return end(failed); }
+  const c = window.VELLUM_FIREBASE;
+  if (!c) { bad('The settings file loaded, but has no settings in it', 'The file must start with  window.VELLUM_FIREBASE = {  and have your values inside. If you pasted Firebase’s own code over it, put the wrapper back and paste only the values.'); return end(failed); }
+  const missing = ['apiKey', 'authDomain', 'projectId', 'appId'].filter(k => !c[k]);
+  const holders = ['apiKey', 'authDomain', 'projectId', 'appId'].filter(k => /^PASTE/.test(c[k] || ''));
+  if (missing.length) { bad('Settings missing: ' + missing.join(', '), 'Open js/firebase-config.js and add the missing values.'); return end(failed); }
+  if (holders.length) { bad('Still has PASTE_ placeholders: ' + holders.join(', '), 'Replace each with the value from Firebase (Project settings → Your apps), then upload the file.'); return end(failed); }
+  show('ok', 'Settings found', `project: ${c.projectId}\nauth domain: ${c.authDomain}\nthis page is on: ${location.hostname}`);
+  if (c.authDomain !== c.projectId + '.firebaseapp.com' && !/\.firebaseapp\.com$|\.web\.app$/.test(c.authDomain)) show('warn', 'The auth domain looks unusual', 'It normally looks like  yourproject.firebaseapp.com.  Check you copied it exactly.');
+
+  // 3. Start Firebase
+  let auth, db;
+  try { if (!firebase.apps.length) firebase.initializeApp(c); auth = firebase.auth(); db = firebase.firestore(); show('ok', 'Firebase started'); }
+  catch (e) { bad('Firebase would not start', e.message); return end(failed); }
+
+  // 4. Sign-in service (a fake login that is expected to fail in a particular way)
+  try {
+    await timeout(auth.signInWithEmailAndPassword('vellum-check@example.com', 'not-a-real-password-1'), 10000);
+    show('warn', 'Sign-in answered unexpectedly');
+  } catch (e) {
+    const code = e.code || '', fine = ['auth/user-not-found', 'auth/wrong-password', 'auth/invalid-credential', 'auth/invalid-login-credentials', 'auth/invalid-email'];
+    if (fine.includes(code)) show('ok', 'Sign-in is switched on', 'Email and password sign-in answered correctly.');
+    else if (code === 'auth/operation-not-allowed') bad('Email/Password sign-in is switched off', 'Firebase console → Build → Authentication → Sign-in method → Email/Password → Enable → Save.');
+    else if (code === 'auth/configuration-not-found') bad('Authentication was never started', 'Firebase console → Build → Authentication → click “Get started”, then enable Email/Password.');
+    else if (/api-key/.test(code)) bad('The apiKey is not accepted', 'Copy the apiKey again from Project settings → Your apps, with no extra spaces or quotes inside.');
+    else if (code === 'auth/network-request-failed' || code === 'timeout') bad('Could not reach Firebase sign-in', 'Network or an ad blocker is in the way. Try another network or turn the blocker off.');
+    else if (code === 'auth/too-many-requests') show('warn', 'Firebase is asking for a pause', 'Wait a few minutes and run this again.');
+    else bad('Sign-in problem', `${code || 'unknown'}: ${e.message}`);
+  }
+
+  // 5. Database reachable, and the link rule allows signers to open a link
+  try {
+    const s = await timeout(db.collection('links').doc('check-connection').get(), 10000);
+    show('ok', 'The database answers', s.exists ? '' : 'Rules let signers open a link, as intended.');
+  } catch (e) {
+    const code = e.code || '';
+    if (code === 'permission-denied') bad('The database refused the request', 'The rules are not published yet. Firebase console → Build → Firestore Database → Rules → paste everything from firestore.rules → Publish.');
+    else if (code === 'timeout' || code === 'unavailable') bad('The database did not answer', 'Most often it has not been created yet: Firebase console → Build → Firestore Database → Create database. Otherwise a network or ad blocker is in the way.');
+    else if (code === 'failed-precondition' || /has not been used|disabled/i.test(e.message)) bad('The database is not switched on', 'Firebase console → Build → Firestore Database → Create database. Wait a minute, then run this again.');
+    else bad('Database problem', `${code || 'unknown'}: ${e.message}`);
+  }
+
+  // 6. Your data is protected: a stranger must NOT be able to list requests
+  if (!failed) {
+    try {
+      await timeout(db.collection('links').where('ownerUid', '==', 'someone-else').get(), 10000);
+      show('warn', 'Your database is too open', 'A stranger could list your requests. Publish the rules from firestore.rules (Firestore Database → Rules → Publish).');
+    } catch (e) {
+      if ((e.code || '') === 'permission-denied') show('ok', 'Your data is protected', 'A stranger cannot list your signing requests.');
+      else show('warn', 'Could not test the protection', e.code || e.message);
+    }
+  }
+  end(failed);
+}
+function end(failed) {
+  $('sum').hidden = false; $('sum').className = failed ? 'bad' : 'ok';
+  $('sum').textContent = failed ? 'Fix the first ✗ above, upload the change, then run this again.' : 'Everything checks out. Vellum should connect now.';
+  $('copy').hidden = false; $('help').hidden = false;
+}
+const HELP = "You are my patient helper for a web app I run called Vellum. I am not a programmer. Please explain things in plain words, with no jargon, and give me one small step at a time.\n\nHOW TO HELP ME\n- Start by asking what I was doing and the exact message I saw (or ask me for a screenshot). Ask one question at a time.\n- Tell me exactly which file to open and which lines to change. Use \"Find this\" and \"Replace with\" blocks I can copy and paste. Change as few files as possible. Do not rewrite whole files unless I ask.\n- If I need to click something in the Firebase website, give me the exact menu path, for example: Build, then Authentication, then Sign-in method.\n- Never ask me for my password, my Firebase account login, or any \"service account\" or private key. My Firebase web settings (apiKey, authDomain, projectId, appId) are normal to share, but still tell me before I paste anything private.\n- Before any step that could delete data, warn me and tell me how to back up first. Vellum has a Backup button under the three-dot menu, then Settings.\n- If you are not sure, say so. Do not guess and present it as fact.\n\nWHAT VELLUM IS\nVellum is a PDF app that runs in the browser, installable like an app. It has two sides:\n1. Edit a PDF: open a PDF, add text, highlights, shapes, notes, pictures, links, icon buttons, fillable form fields, passwords, undo/redo, templates, and backup/restore.\n2. Get signatures: place signature, initials and date boxes, then create a one-time link for each signer. The signer opens the link on any device, signs, and the link stops working. I can download the signed PDF with a signing record page.\n\nHOW IT IS BUILT\n- It is a plain static website (no server code of my own), hosted on GitHub Pages (or similar). Files are uploaded by hand. There is no build step.\n- Files in the main folder: index.html (the app), sign.html (the page my clients see), check-firebase.html (a connection checker I can open in the browser), sw.js (offline helper), manifest.webmanifest (install info), firestore.rules (database rules), SETUP.md (Firebase setup steps).\n- Folders: css/ (styles.css, sigpad.css, signer.css), icons/ (icon-192.png, icon-512.png, logo.png), js/.\n- js/ files: state.js, storage.js, history.js (undo/redo), fonts.js, security.js (passwords), nav.js (links and icon buttons), viewer.js, tools.js, forms.js, export.js (builds the saved PDF), textstyle.js, designer.js (form field designer), images.js, pages.js, settings.js (save box, folder, install), sigpad.js (draw/type signature), signprep.js (signature boxes and Send), cloud.js (all Firebase work), home.js, templates.js, backup.js, gestures.js, app.js, signer.js (client page logic), firebase-config.js (MY Firebase settings; the only file meant to be edited by me).\n- Libraries loaded from the internet: pdf.js 3.11.174 (cdnjs), pdf-lib \"@cantoo/pdf-lib\" 2.11.1 (jsDelivr), Firebase 10.14.1 \"compat\" scripts (gstatic.com): app, auth, firestore.\n- The whole app lives in one global object called App. Annotations (marks) are stored per page as fractions of the page (0 to 1), so zooming does not break them.\n- sw.js caches files for offline use. To force every device to refresh, change the number in this line near the top of sw.js: const CACHE = 'vellum-v12'; (make it a higher number).\n- Local data is kept in the browser's IndexedDB (database name \"pdfstudio\", store \"kv\"): the last document, templates (keys tpl:index and tpl:ID), backup link, and the chosen save folder. Passwords are never stored.\n\nHOW SIGNING WORKS (FIREBASE)\n- I use a free Firebase project with Email/Password sign-in and Firestore. No paid features, no Cloud Functions, no Firebase Storage.\n- firebase-config.js must look exactly like this, with my own values:\n  window.VELLUM_FIREBASE = { apiKey: '...', authDomain: '...', projectId: '...', appId: '...', emailExtension: false };\n  (It must NOT be replaced by Firebase's own import/const snippet.)\n- Firestore collections: requests/{id} (owner only, plus a \"chunks\" subcollection holding the PDF as base64 pieces), links/{token} (one per signer; token is a long random string; has used, expiresAt, boxes, result, signedAt; plus its own \"chunks\"), and mail/ (only if the Trigger Email extension is installed).\n- Rules are in firestore.rules and must be pasted into Firestore, Rules tab, then Published. Signers need no account: they can read their own link document by its secret name, and can read the PDF pieces only while the link is unused and not expired. They can update the link once to mark it used and save their signature.\n- Links expire after 14 days. PDFs up to about 6 MB can be sent. Password-protected PDFs cannot be sent.\n- The signed copy is built in my browser from the original file plus each signer's signature image, with a signing record page added at the end.\n\nCOMMON PROBLEMS AND WHAT THEY USUALLY MEAN\n- \"Firebase isn't set up yet\" or \"can't find your Firebase settings\": firebase-config.js still has PASTE_ words, was not uploaded, was replaced with Firebase's own code, or an old copy is cached. Check by opening my-site-address/js/firebase-config.js in the browser.\n- \"Couldn't load Firebase\": an ad blocker, a restricted network, or no internet.\n- Sign-in or Create account errors: Email/Password is not enabled (Firebase, Build, Authentication, Sign-in method), or Authentication was never started (\"Get started\").\n- \"Missing or insufficient permissions\": the Firestore database was not created, or firestore.rules were not pasted and Published.\n- The database never answers: not created yet (Build, Firestore Database, Create database), or the network blocks it.\n- A signer's link says invalid, expired or already signed: the link was removed, is older than 14 days, or was already used. I can create a new link from Get signatures.\n- Old screens after I upload changes: the browser or installed app is showing a saved copy. Fix by raising the number in sw.js, and clearing the site's saved data once (or fully closing and reopening the installed app).\n- Something works on a computer but not a phone, or the reverse: ask which device and browser, because folder saving, screen capture and the install button differ by browser.\n- Icons or logo missing: the files in the icons folder must be real PNG files with the exact names above.\n\nA GOOD FIRST STEP FOR ANY CONNECTION PROBLEM\nOpen my-site-address/check-firebase.html. It tests each step and shows a tick or cross with plain instructions. Ask me to paste its results (it has a Copy results button).\n\nABOUT ME AND MY SETUP (I will fill this in)\n- Where Vellum is hosted (address): \n- My device and browser: \n- What I was trying to do: \n- The exact message I saw (or I will attach a screenshot): \n- What I have already tried: \n\nIf you understand, reply with just: \"Ready. What happened?\"\n";
+$('help').onclick = async () => {
+  const text = HELP.replace('If you understand, reply with just: "Ready. What happened?"', 'MY CHECK RESULTS (from check-firebase.html):\n' + lines.join('\n') + '\n\nPlease use these results to work out what is wrong.\n\nIf you understand, reply with just: "Ready. What happened?"');
+  try { await navigator.clipboard.writeText(text); $('help').textContent = 'Copied. Paste it into an AI chat.'; } catch (e) { prompt('Copy this and paste it into an AI chat:', text); }
+};
+$('again').onclick = run;
+$('copy').onclick = async () => { try { await navigator.clipboard.writeText(lines.join('\n')); $('copy').textContent = 'Copied'; } catch (e) { prompt('Copy this:', lines.join('\n')); } };
+run();
+</script>
+</body>
+</html>
