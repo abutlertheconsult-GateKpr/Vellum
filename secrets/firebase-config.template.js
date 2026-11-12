@@ -7,7 +7,7 @@ apiKey: "AIzaSyASH0y_tPaio4GFze-OaRufeyJ06__v1Fg",
   appId: "1:693680750330:web:69904e22eacbea411f1343"
 };
 window.VELLUM_EMAIL = {
-  publicKey: 'PASTE_EMAILJS_PUBLIC_KEY',
-  serviceId: 'PASTE_EMAILJS_SERVICE_ID',
-  templateId: 'PASTE_EMAILJS_TEMPLATE_ID'
+  publicKey: '4vs0Q2R3Xy04J0ToH',
+  serviceId: 'service_cs6gbgx',
+  templateId: 'template_yq23hub'
 };
