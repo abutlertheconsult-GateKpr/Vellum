@@ -7,6 +7,8 @@ App.settings = {
 
   async init() {
     if (this.hasDir) this.folder = (await App.store.get('folder')) || null;
+    this.backupLink = (await App.store.get('backupLink')) || ''; this.openAfterPdf = !!(await App.store.get('openAfterPdf'));
+    $('backupLink').value = this.backupLink; $('openAfterPdf').checked = this.openAfterPdf;
     this.paint(); this.paintInstall(); this.wire();
   },
 
@@ -33,7 +35,7 @@ App.settings = {
     $('settingsBtn').onclick = () => $('settings').showModal();
     $('closeSettings').onclick = () => $('settings').close();
     $('pickFolder').onclick = async () => {
-      try { this.folder = await showDirectoryPicker({ mode: 'readwrite', id: 'vellum' }); await App.store.put('folder', this.folder); this.paint(); } catch (e) {}
+      try { this.folder = await showDirectoryPicker({ mode: 'readwrite', id: 'pdfstudio' }); await App.store.put('folder', this.folder); this.paint(); } catch (e) {}
     };
     $('clearFolder').onclick = async () => { this.folder = null; await App.store.put('folder', null); this.paint(); };
     window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); this.deferred = e; this.paintInstall(); });
@@ -50,13 +52,13 @@ App.settings = {
     $('saveBrowse').onclick = () => this.run(async () => {
       const p = this.pending;
       if (this.hasSaveAs) {
-        const h = await showSaveFilePicker({ suggestedName: p.name, types: [{ description: 'PDF', accept: { 'application/pdf': ['.pdf'] } }] });
+        const h = await showSaveFilePicker({ suggestedName: p.name, types: [{ description: p.kind === 'backup' ? 'Vellum backup' : 'PDF', accept: { [p.mime || 'application/pdf']: ['.' + (p.ext || 'pdf')] } }] });
         const w = await h.createWritable(); await w.write(p.bytes); await w.close(); return h.name;
       }
       return this.toFolder(await showDirectoryPicker({ mode: 'readwrite' }));
     });
     $('saveShare').onclick = () => this.run(async () => {
-      const p = this.pending, file = new File([p.bytes], p.name, { type: 'application/pdf' });
+      const p = this.pending, file = new File([p.bytes], p.name, { type: p.mime || 'application/pdf' });
       if (this.touch && navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file] }); return p.name; }
       const a = document.createElement('a'); a.href = URL.createObjectURL(file); a.download = p.name; a.click(); return p.name;
     });
@@ -65,6 +67,7 @@ App.settings = {
   // Opens the Save box. The PDF is built first so the buttons can act right away.
   async save() {
     if (!App.bytes) return;
+    this.after = null;
     await App.designer.bake();
     const variants = { edit: await App.exporter.make({ flatten: false }) };
     if (App.hasForms) variants.lock = await App.exporter.make({ flatten: true });
@@ -88,8 +91,9 @@ App.settings = {
   },
 
   // Offer a finished file (like a signed copy) with the same save choices.
-  offer(bytes, name) {
-    this.pending = { variants: { edit: bytes }, name, get bytes() { return bytes; } };
+  offer(bytes, name, opts = {}) {
+    this.after = opts.after || null;
+    this.pending = { variants: { edit: bytes }, name, mime: opts.mime, ext: opts.ext, kind: opts.kind, get bytes() { return bytes; } };
     this.mode = 'edit'; $('formMode').hidden = true; $('saveName').textContent = name; $('saveMsg').textContent = '';
     $('saveHere').hidden = !(this.folder && this.hasDir); if (this.folder) $('saveHere').textContent = 'Save to “' + this.folder.name + '”';
     $('saveBrowse').hidden = !(this.hasSaveAs || this.hasDir);
@@ -97,8 +101,19 @@ App.settings = {
     $('saveDlg').showModal();
   },
 
+  // After a save: run what the caller asked for, or open your link if you chose that for PDFs.
+  afterSave() {
+    const a = this.after; this.after = null;
+    if (a) return a();
+    if (this.backupLink && this.openAfterPdf && this.pending && this.pending.kind !== 'backup') this.openLink();
+  },
+  openLink() {
+    if (!this.backupLink) return this.toast('Add a link under Backup in Settings first.');
+    if (!window.open(App.nav.normUrl(this.backupLink), '_blank', 'noopener')) this.toast('Tap “Open my link” in Settings to go to your folder.');
+  },
+
   async run(fn) {
-    try { const name = await fn(); $('saveDlg').close(); this.toast('Saved: ' + name); }
+    try { const name = await fn(); $('saveDlg').close(); this.toast('Saved: ' + name); this.afterSave(); }
     catch (e) { if (e.name !== 'AbortError') $('saveMsg').textContent = e.message || 'Could not save. Try another option.'; }
   },
 
@@ -110,7 +125,7 @@ App.settings = {
 
   async toFolder(dir) { // never overwrites: adds (2), (3)... if the name is taken
     let name = this.pending.name, i = 1;
-    for (;;) { try { await dir.getFileHandle(name); name = this.pending.name.replace(/\.pdf$/i, '') + ' (' + (++i) + ').pdf'; } catch (e) { break; } }
+    for (;;) { try { await dir.getFileHandle(name); name = this.pending.name.replace(/(\.[^.]+)?$/, ' (' + (++i) + ')$1'); } catch (e) { break; } }
     const w = await (await dir.getFileHandle(name, { create: true })).createWritable();
     await w.write(this.pending.bytes); await w.close();
     return name;

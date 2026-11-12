@@ -60,11 +60,21 @@
     t.el.scrollIntoView({ behavior: 'smooth', block: 'center' }); t.el.classList.add('pulse');
     setTimeout(() => { t.el.classList.remove('pulse'); t.el.click(); }, 500);
   };
-  $('finish').onclick = async () => {
+  const submit = async extra => {
     $('finish').disabled = true; $('finish').textContent = 'Saving…';
     try {
-      await ref.update({ used: true, result: { sig: adopted.signature, initials: adopted.initials, consent: true }, signedAt: firebase.firestore.FieldValue.serverTimestamp(), ua: navigator.userAgent.slice(0, 200) });
-      say('Thank you. You’re done.', 'Your signature has been sent. You can close this page.');
+      await ref.update({ used: true, result: { sig: adopted.signature, initials: adopted.initials, consent: true, ...extra }, signedAt: firebase.firestore.FieldValue.serverTimestamp(), ua: navigator.userAgent.slice(0, 200) });
+      say('Thank you. You’re done.', extra.wantsCopy ? 'Your signature has been sent. A signed copy will be emailed to you once everyone has signed.' : 'Your signature has been sent. You can close this page.');
     } catch (e) { $('finish').disabled = false; $('finish').textContent = 'Finish'; say('Couldn’t save your signature', 'This link may have already been used or has expired. Ask the sender for a new one.'); }
+  };
+  $('finish').onclick = () => { // only asks about a copy if the sender allowed it
+    if (!L.copyAllowed) return submit({ wantsCopy: false });
+    $('copyEmail').value = L.signerEmail || ''; $('copyMsg').textContent = ''; $('copyDlg').showModal();
+  };
+  $('copyBack').onclick = () => $('copyDlg').close();
+  $('copyGo').onclick = () => {
+    const want = $('wantCopy').checked, em = $('copyEmail').value.trim();
+    if (want && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) return ($('copyMsg').textContent = 'Please enter a valid email address.');
+    $('copyDlg').close(); submit(want ? { wantsCopy: true, copyEmail: em } : { wantsCopy: false });
   };
 })();

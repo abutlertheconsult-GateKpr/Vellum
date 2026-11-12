@@ -65,7 +65,7 @@ App.sign = {
     const nos = [...new Set(boxes.map(([, a]) => a.signer || 1))].sort();
     $('sendRows').innerHTML = nos.map(no => `<div class="srow"><b style="color:${this.signerColors[no - 1]}">Signer ${no}</b>
       <input type="text" data-no="${no}" data-f="name" placeholder="Name" autocomplete="off"><input type="email" data-no="${no}" data-f="email" placeholder="Email (optional)" autocomplete="off"></div>`).join('');
-    $('sendOut').innerHTML = ''; $('sendMsg').textContent = ''; $('sendGo').hidden = false; $('sendGo').disabled = false;
+    $('sendOut').innerHTML = ''; $('sendMsg').textContent = ''; $('sendCopyOk').checked = false; $('sendCopyRow').hidden = false; $('sendGo').hidden = false; $('sendGo').disabled = false;
     $('sendDlg').showModal();
   },
   async go() {
@@ -73,8 +73,8 @@ App.sign = {
     const signers = nos.map(no => ({ no, name: document.querySelector(`[data-no="${no}"][data-f=name]`).value.trim() || 'Signer ' + no, email: document.querySelector(`[data-no="${no}"][data-f=email]`).value.trim() }));
     $('sendGo').disabled = true; $('sendMsg').textContent = 'Creating links…';
     try {
-      const links = await App.cloud.createRequest({ name: App.name, signers, boxes: this.all().filter(([, a]) => !a.img) });
-      $('sendMsg').textContent = 'Links work once and expire in 14 days.'; $('sendGo').hidden = true;
+      const links = await App.cloud.createRequest({ name: App.name, signers, boxes: this.all().filter(([, a]) => !a.img), copyAllowed: $('sendCopyOk').checked });
+      $('sendMsg').textContent = 'Links work once and expire in 14 days.'; $('sendGo').hidden = true; $('sendCopyRow').hidden = true;
       $('sendOut').innerHTML = links.map((l, i) => `<div class="lrow"><span>${App.cloud.esc(l.name)}</span><div>
         <button class="pbtn" data-i="${i}" data-a="copy">Copy</button>${navigator.share ? `<button class="pbtn" data-i="${i}" data-a="share">Share</button>` : ''}<button class="pbtn" data-i="${i}" data-a="mail">Email</button></div></div>`).join('');
       this.links = links;
@@ -90,7 +90,7 @@ $('sendOut').onclick = async e => {
   const l = App.sign.links[+b.dataset.i], text = `Please sign ${App.name}:`;
   if (b.dataset.a === 'copy') { try { await navigator.clipboard.writeText(l.url); App.settings.toast('Link copied.'); } catch (x) { prompt('Copy this link:', l.url); } }
   else if (b.dataset.a === 'share') { try { await navigator.share({ title: 'Please sign', text, url: l.url }); } catch (x) {} }
-  else App.cloud.email(l);
+  else App.cloud.composeEmail(l);
 };
 $('sigSigner').onchange = e => {
   if (!App.selected) return;
