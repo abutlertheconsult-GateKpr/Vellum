@@ -1,1 +1,65 @@
+name: Publish Vellum
 
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Stop if a key was committed by mistake
+        run: |
+          if grep -rIl --include='*.js' --include='*.html' --exclude='firebase-config.example.js' -E 'AIza[0-9A-Za-z_-]{35}' . ; then
+            echo "A Google API key is inside the files above. Remove it and use GitHub Secrets instead (see SECURITY.md)."
+            exit 1
+          fi
+
+      - name: Write the private settings file from GitHub Secrets
+        env:
+          FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+          FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+          EMAILJS_PUBLIC_KEY: ${{ secrets.EMAILJS_PUBLIC_KEY }}
+          EMAILJS_SERVICE_ID: ${{ secrets.EMAILJS_SERVICE_ID }}
+          EMAILJS_TEMPLATE_ID: ${{ secrets.EMAILJS_TEMPLATE_ID }}
+        run: |
+          cat > js/firebase-config.js <<EOF
+          window.VELLUM_FIREBASE = {
+            apiKey: '${FIREBASE_API_KEY}',
+            authDomain: '${FIREBASE_AUTH_DOMAIN}',
+            projectId: '${FIREBASE_PROJECT_ID}',
+            appId: '${FIREBASE_APP_ID}'
+          };
+          window.VELLUM_EMAIL = {
+            publicKey: '${EMAILJS_PUBLIC_KEY}',
+            serviceId: '${EMAILJS_SERVICE_ID}',
+            templateId: '${EMAILJS_TEMPLATE_ID}'
+          };
+          EOF
+
+      - name: Leave private folders out of the published site
+        run: rm -rf secrets
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v4
