@@ -1,4 +1,4 @@
-/* Vellum look. Change the colours here and everything follows. */
+/* PDF Studio look. Change the colours here and everything follows. */
 :root{
   --bg:#0b0b0c; --glass:rgba(26,24,22,.66); --line:rgba(255,255,255,.09);
   --text:#f3efe8; --mute:#a39d92; --gold:#d4b483; --gold-soft:rgba(212,180,131,.16);
@@ -204,7 +204,8 @@ body.noscroll{overflow:hidden}
 .tpl .x{color:#e58a7e}
 #tplPickList button{display:block;width:100%;margin-bottom:6px;text-align:left}
 
-/* home logo */
-#home .logo{display:block;width:min(56vw,250px);height:auto;margin:0 auto 6px;animation:logoIn .9s var(--ease) both;filter:drop-shadow(0 12px 40px rgba(212,180,131,.18))}
-@keyframes logoIn{from{opacity:0;transform:translateY(10px) scale(.96)}}
-@media (max-height:640px){#home .logo{width:min(34vh,200px)}}
+/* email box, request buttons */
+#mailDlg textarea{width:100%;margin:10px 0 4px;padding:12px 14px;font:inherit;color:var(--text);background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:14px}
+#mailDlg input{margin-bottom:0}
+.rqf{flex-wrap:wrap}
+.rqrow{flex-wrap:wrap}
