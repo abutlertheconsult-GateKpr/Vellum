@@ -3,7 +3,7 @@
 Signing links need a small online service to remember who has signed. This uses Firebase's free plan.
 
 1. Go to console.firebase.google.com and click **Add project**. Name it anything. You can turn Google Analytics off.
-2. In the project, click the **</>** (Web) icon to add a web app. Copy the settings it shows (apiKey, authDomain, projectId, appId) into `js/firebase-config.js`, replacing the PASTE_ words. Upload that file.
+2. In the project, click the **</>** (Web) icon to add a web app. Copy the settings it shows (apiKey, authDomain, projectId, appId) into GitHub Secrets as described in SECURITY.md. (For a quick test on your own computer you can instead copy `secrets/firebase-config.template.js` to `js/firebase-config.js`.)
 3. **Build > Authentication > Get started > Email/Password > Enable.**
 4. **Build > Firestore Database > Create database.** Choose any location, then **production mode**.
 5. In Firestore, open the **Rules** tab. Delete what is there, paste in everything from `firestore.rules`, and click **Publish**.
@@ -14,5 +14,5 @@ Signing links need a small online service to remember who has signed. This uses 
 ## Good to know
 - Each file you send can be up to about 6 MB.
 - Links work once and expire after 14 days. After a link is used, the document can no longer be opened with it.
-- The Email button opens your email app with the message filled in. To send straight from Vellum instead, install Firebase's "Trigger Email from Firestore" extension (it needs the paid Blaze plan) and set `emailExtension: true` in `js/firebase-config.js`.
+- To send email from inside Vellum, follow EMAIL-SETUP.md. To keep your keys out of GitHub, follow SECURITY.md first.
 - Delete a request in Vellum when you are finished with it. That removes the stored file.
