@@ -1,0 +1,8 @@
+# Private settings stay on your own computer. Never upload these to GitHub.
+secrets/*
+!secrets/README.txt
+js/firebase-config.js
+.env
+*.local.js
+.DS_Store
+Thumbs.db
