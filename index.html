@@ -146,6 +146,14 @@
     <p id="folderNote" class="note"></p>
   </section>
   <section>
+    <h3>Backup</h3>
+    <input type="text" id="backupLink" placeholder="Link to your backup folder (Drive, OneDrive, Dropbox…)" autocomplete="off" autocapitalize="off">
+    <label><input type="checkbox" id="openAfterPdf"> Also open this link after I save a PDF</label>
+    <div class="row" style="margin-top:10px"><button id="backupNow" class="primary">Back up now</button><button id="restoreBtn">Restore</button><button id="backupOpen">Open my link</button></div>
+    <input type="file" id="restoreFile" accept=".json,.vellum,application/json" hidden>
+    <p class="note">A backup holds your open document and all your templates. Save it to a folder on this device or share it, then Vellum opens your link so you can drop the file in.</p>
+  </section>
+  <section>
     <h3>Install</h3>
     <p id="installNote" class="note"></p>
     <button id="install">Install app</button>
@@ -190,9 +198,20 @@
   <div class="stack"><button id="tplPickFile" class="primary">Open a PDF file</button><button id="tplPickClose">Cancel</button></div>
 </dialog>
 
+<dialog id="mailDlg" class="dlg">
+  <h2>Email the link</h2>
+  <input type="email" id="mTo" placeholder="To" autocomplete="off">
+  <input type="text" id="mSubj" placeholder="Subject" autocomplete="off">
+  <textarea id="mBody" rows="9"></textarea>
+  <p class="note">Keep the words [link] in your message. In the email it becomes short text that opens the real link.</p>
+  <p id="mMsg" class="note"></p>
+  <div class="row end"><button id="mCancel">Cancel</button><button id="mApp">Use my email app</button><button id="mSend" class="primary">Send</button></div>
+</dialog>
+
 <dialog id="sendDlg" class="dlg">
   <h2>Send for signatures</h2>
   <div id="sendRows"></div>
+  <label id="sendCopyRow"><input type="checkbox" id="sendCopyOk"> Let signers ask for a signed copy afterwards</label>
   <div id="sendOut"></div>
   <p id="sendMsg" class="note"></p>
   <div class="row end"><button id="sendClose">Close</button><button id="sendGo" class="primary">Create links</button></div>
@@ -275,7 +294,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="./.gitignore/firebase-config.js"></script>
+<script src="js/firebase-config.js"></script>
 <script src="js/state.js"></script>
 <script src="js/storage.js"></script>
 <script src="js/history.js"></script>
@@ -296,6 +315,7 @@
 <script src="js/cloud.js"></script>
 <script src="js/home.js"></script>
 <script src="js/templates.js"></script>
+<script src="js/backup.js"></script>
 <script src="js/gestures.js"></script>
 <script src="js/app.js"></script>
 </body>

@@ -1,7 +1,7 @@
 // Makes the app work offline. Change CACHE's version number when you want every device to refresh its saved copy.
-const CACHE = 'vellum-v14';
-const CORE = ['./', 'index.html', 'manifest.webmanifest', 'css/styles.css','.gitignore/firebase-config.js',
-  'js/state.js', 'js/storage.js', 'js/viewer.js', 'js/tools.js', 'js/export.js', 'js/forms.js', 'js/fonts.js', 'js/security.js', 'js/designer.js', 'js/nav.js', 'js/history.js', 'js/templates.js', 'js/backup.js', 'js/sigpad.js', 'js/signprep.js', 'js/cloud.js', 'js/home.js', 'js/firebase-config.js', 'js/signer.js', 'sign.html', 'css/sigpad.css', 'css/signer.css', 'js/images.js', 'js/pages.js', 'js/textstyle.js', 'js/settings.js', 'js/gestures.js', 'js/app.js',
+const CACHE = 'vellum-v13';
+const CORE = ['./', 'index.html', 'manifest.webmanifest', 'css/styles.css',
+  'js/state.js', 'js/storage.js', 'js/viewer.js', 'js/tools.js', 'js/export.js', 'js/forms.js', 'js/fonts.js', 'js/security.js', 'js/designer.js', 'js/nav.js', 'js/copy.js', 'copy.html', 'js/history.js', 'js/templates.js', 'js/backup.js', 'js/sigpad.js', 'js/signprep.js', 'js/cloud.js', 'js/home.js', 'js/firebase-config.js', 'js/signer.js', 'sign.html', 'css/sigpad.css', 'css/signer.css', 'js/images.js', 'js/pages.js', 'js/textstyle.js', 'js/settings.js', 'js/gestures.js', 'js/app.js',
   'icons/icon-192.png', 'icons/logo.png', 'icons/icon-512.png'];
 const LIBS = [
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',

@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0e0e0f">
+<meta name="robots" content="noindex">
+<title>Your signed copy</title>
+<link rel="stylesheet" href="css/signer.css">
+</head>
+<body>
+<main id="msg" class="card" hidden><h1 id="msgT"></h1><p id="msgP"></p></main>
+<header id="bar" hidden><span id="left">Your signed copy</span><button id="dl" class="go">Download</button></header>
+<div id="pages" hidden></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/copy.js"></script>
+</body>
+</html>

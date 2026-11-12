@@ -19,6 +19,14 @@
 </main>
 <header id="bar" hidden><span id="left"></span><button id="next">Next</button><button id="finish" class="go" disabled>Finish</button></header>
 <div id="pages" hidden></div>
+<dialog id="copyDlg" class="sp">
+  <h2>Signed copy</h2>
+  <p class="sp-note" style="margin:0 0 12px">The sender can send everyone a signed copy once all signatures are in.</p>
+  <label><input type="checkbox" id="wantCopy" checked> Yes, send me a signed copy</label>
+  <input class="sp-name" type="email" id="copyEmail" placeholder="Your email" autocomplete="email" style="margin-top:12px">
+  <p class="sp-note" id="copyMsg"></p>
+  <div class="sp-row"><button type="button" id="copyBack">Back</button><button type="button" id="copyGo" class="sp-ok">Finish</button></div>
+</dialog>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
