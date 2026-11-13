@@ -55,11 +55,15 @@ $('tplPickFile').onclick = () => {
   $('tplPick').close(); if (!App.pdf) $('file').click();
   document.body.classList.add('tray-sign'); App.settings.toast('Place signature boxes, then tap Send.');
 };
-// "New request" offers your templates first (if you have any).
-$('spNew').onclick = async () => {
+// "New request": if a document is open, ask whether to close it. Then offer templates, or a file.
+const beginRequest = async () => {
   $('sendPanel').hidden = true; document.body.classList.remove('noscroll');
   if ((await App.templates.list()).length) { $('tplPickFile').textContent = App.pdf ? 'Use the open document' : 'Open a PDF file'; return $('tplPick').showModal(); }
-  if (!App.pdf) $('file').click();
+  if (!App.pdf) { $('file').click(); App.settings.toast('Choose the PDF to send. If nothing opens, tap the folder button at the top.'); }
   document.body.classList.add('tray-sign'); App.settings.toast('Place signature boxes, then tap Send.');
 };
+$('spNew').onclick = () => { if (App.pdf) { $('newReqName').textContent = App.name; $('newReqDlg').showModal(); } else beginRequest(); };
+$('newReqClose').onclick = async () => { $('newReqDlg').close(); await App.closeDoc(); beginRequest(); };
+$('newReqKeep').onclick = () => { $('newReqDlg').close(); beginRequest(); };
+$('newReqCancel').onclick = () => $('newReqDlg').close();
 App.templates.paint();
