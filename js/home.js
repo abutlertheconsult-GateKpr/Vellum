@@ -2,5 +2,6 @@
 App.home = { show() { $('home').hidden = false; }, hide() { $('home').hidden = true; } };
 $('homeEdit').onclick = () => App.home.hide();
 $('homeSign').onclick = () => { App.home.hide(); App.cloud.openDashboard(); };
+$('homeTop').onclick = () => App.home.show();
 $('homeBtn').onclick = () => { $('menu').hidden = true; App.home.show(); };
 $('spBack').onclick = () => { $('sendPanel').hidden = true; document.body.classList.remove('noscroll'); App.home.show(); };
