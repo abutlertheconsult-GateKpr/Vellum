@@ -210,7 +210,13 @@
   <p id="mMsg" class="note"></p>
   <div class="row end"><button id="mCancel">Cancel</button><button id="mApp">Use my email app</button><button id="mSend" class="primary">Send</button></div>
 </dialog>
-
+  
+<dialog id="newReqDlg" class="dlg">
+  <h2>New request</h2>
+  <p class="note">“<span id="newReqName"></span>” is open. Close it and start with a new file? Anything you haven’t saved will be lost.</p>
+  <div class="stack"><button id="newReqClose" class="primary">Close it and choose a new file</button><button id="newReqKeep">Use this document</button><button id="newReqCancel">Cancel</button></div>
+</dialog>
+  
 <dialog id="sendDlg" class="dlg">
   <h2>Send for signatures</h2>
   <div id="sendRows"></div>
