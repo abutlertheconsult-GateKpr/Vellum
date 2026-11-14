@@ -242,6 +242,24 @@
   <textarea id="fOpts" rows="4" placeholder="One choice per line"></textarea>
   <input type="text" id="fChoice" placeholder="This button’s label (e.g. Yes)" autocomplete="off">
   <p id="fNote" class="note"></p>
+  <details id="fAdv">
+    <summary>Advanced</summary>
+    <div id="fAdvText">
+      <select id="fMode" aria-label="Allowed characters">
+        <option value="any">Anything</option><option value="digits">Numbers only</option>
+        <option value="letters">Letters only</option><option value="alnum">Letters and numbers</option>
+      </select>
+      <input type="number" id="fMax" min="1" max="500" placeholder="Maximum characters (optional)">
+      <input type="text" id="fAllow" placeholder="Only these characters (optional), e.g. 0123456789-" autocomplete="off" autocapitalize="off">
+      <input type="text" id="fBlock" placeholder="Never these characters (optional), e.g. #%&" autocomplete="off" autocapitalize="off">
+      <label><input type="checkbox" id="fUpper"> Make letters CAPITALS</label>
+    </div>
+    <select id="fFmt" aria-label="Date format" hidden>
+      <option value="MM/DD/YYYY">Month/Day/Year  (12/31/2026)</option>
+      <option value="DD/MM/YYYY">Day/Month/Year  (31/12/2026)</option>
+      <option value="YYYY-MM-DD">Year-Month-Day  (2026-12-31)</option>
+    </select>
+  </details>
   <div class="row end"><button id="fCancel">Cancel</button><button id="fOk" class="primary">Done</button></div>
 </dialog>
 
