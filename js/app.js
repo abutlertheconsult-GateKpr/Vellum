@@ -5,7 +5,7 @@ App.setTool = t => {
   document.body.dataset.tool = t;
   document.querySelectorAll('button[data-tool]').forEach(b => b.classList.toggle('on', b.dataset.tool === t));
   $('shapesTab').classList.toggle('on', ['rect', 'ellipse', 'arrow'].includes(t));
-  ['shapes', 'img', 'link', 'field', 'sign', 'more'].forEach(x => document.body.classList.remove('tray-' + x));
+  ['shapes', 'img', 'link', 'field', 'more'].forEach(x => document.body.classList.remove('tray-' + x));
   $('linkTab').classList.toggle('on', ['link', 'iconbtn'].includes(t));
   $('fieldTab').classList.toggle('on', t.startsWith('f-'));
   $('signTab').classList.toggle('on', t.startsWith('sig-'));
@@ -51,7 +51,7 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catc
 // Top-right menu and the Shapes tray.
 const tray = name => {
   const c = 'tray-' + name, was = document.body.classList.contains(c);
-  ['shapes', 'img', 'link', 'field', 'sign', 'more'].forEach(x => document.body.classList.remove('tray-' + x));
+  ['shapes', 'img', 'link', 'field', 'more'].forEach(x => document.body.classList.remove('tray-' + x));
   document.body.classList.toggle(c, !was);
 };
 $('shapesTab').onclick = () => tray('shapes');
