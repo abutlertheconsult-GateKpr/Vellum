@@ -6,6 +6,7 @@ App.viewer = {
     const doc = await App.openPdf(bytes);
     App.bytes = bytes.slice(0);
     App.pdf = doc;
+    await App.rules.load();
     const first = await App.pdf.getPage(1);
     const w = first.getViewport({ scale: 1 }).width;
     App.scale = Math.min(1.5, (window.innerWidth - 16) / w);
@@ -48,6 +49,7 @@ App.viewer = {
     App.bytes = bytes.slice(0);
     if (App.pdf) await App.pdf.destroy();
     App.pdf = await App.openPdf(bytes);
+    await App.rules.load();
     App.hasForms = false;
     await this.render();
     App.history.reset();
