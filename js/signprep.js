@@ -81,8 +81,9 @@ App.sign = {
     } catch (e) { $('sendMsg').textContent = e.message === 'cancelled' ? 'Sign in to send.' : e.message; $('sendGo').disabled = false; }
   }
 };
-$('sigFind').onclick = () => { document.body.classList.remove('tray-sign'); App.sign.detect(); };
-$('sigSend').onclick = () => { document.body.classList.remove('tray-sign'); App.sign.send(); };
+$('sigFind').onclick = () => App.sign.detect();
+$('sigSend').onclick = () => App.sign.send();
+$('signClose').onclick = () => document.body.classList.remove('tray-sign');
 $('sendGo').onclick = () => App.sign.go();
 $('sendClose').onclick = () => $('sendDlg').close();
 $('sendOut').onclick = async e => {
