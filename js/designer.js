@@ -56,7 +56,7 @@ App.designer = {
     for (const [n, a] of list) {
       const pg = pages[n - 1]; if (!pg) continue;
       const W = pg.getWidth(), H = pg.getHeight(), box = { x: a.x * W, y: H - (a.y + a.h) * H, width: a.w * W, height: a.h * H, ...style };
-      let nm = a.name || 'test1';
+      let nm = a.name || 'Field';
       if (a.ftype === 'radio') {
         if (!names[nm]) { let k = nm, i = 1; while (taken.has(k)) k = nm + ' ' + (++i); names[nm] = k; taken.add(k); groups[k] = form.createRadioGroup(k); }
         groups[names[nm]].addOptionToPage(a.choice || 'Option', pg, box);
