@@ -209,3 +209,10 @@ body.noscroll{overflow:hidden}
 #mailDlg input{margin-bottom:0}
 .rqf{flex-wrap:wrap}
 .rqrow{flex-wrap:wrap}
+
+/* advanced field settings */
+.dlg select{width:100%;margin:10px 0 4px;padding:12px 14px;font:inherit;color:var(--text);background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:14px}
+.dlg select option{color:#111}
+#fAdv{margin-top:12px}
+#fAdv summary{cursor:pointer;color:var(--gold);font-weight:600;padding:6px 0}
+.fld[type=date]{padding:0 2px}
