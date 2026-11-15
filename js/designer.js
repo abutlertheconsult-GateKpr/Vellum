@@ -51,7 +51,7 @@ App.designer = {
     const list = Object.entries(App.annots).flatMap(([n, l]) => l.filter(a => a.type === 'field').map(a => [+n, a]));
     if (!list.length) return false;
     const { rgb } = PDFLib, doc = await App.pdfLoad(App.bytes), form = doc.getForm(), pages = doc.getPages();
-    const taken = new Set(form.getFields().map(f => f.getName())), groups = {}, names = {}, rules{};
+    const taken = new Set(form.getFields().map(f => f.getName())), groups = {}, names = {}, rules = {};
     const style = { backgroundColor: rgb(.86, .89, 1), borderColor: rgb(.1, .14, .31), borderWidth: 1 };
     for (const [n, a] of list) {
       const pg = pages[n - 1]; if (!pg) continue;
