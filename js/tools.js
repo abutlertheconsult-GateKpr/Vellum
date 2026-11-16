@@ -19,6 +19,12 @@ App.tools = {
         if (hit && hit.dataset.type === 'sig') App.sign.tap(n, this.find(n, hit.dataset.id));
         return;
       }
+      if (!App.editing) { // locked: you can use buttons, links and signature boxes, but nothing moves
+        const hit = e.target.closest('.ann');
+        if (hit && ['link', 'iconbtn'].includes(hit.dataset.type)) App.nav.follow(this.find(n, hit.dataset.id));
+        if (hit && hit.dataset.type === 'sig') App.sign.tap(n, this.find(n, hit.dataset.id));
+        return;
+      }
       const el = e.target.closest('.ann');
       if (e.target.classList.contains('grip')) return this.drag(layer, e, n, App.selected.id, 'resize', pos);
       if (t === 'select') {
