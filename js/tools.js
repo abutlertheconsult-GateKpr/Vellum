@@ -42,7 +42,7 @@ App.tools = {
       }
       if (t.startsWith('f-')) { // a fillable field
         const f = t.slice(2), sq = f === 'check' || f === 'radio';
-        Object.assign(a, { type: 'field', ftype: f, name: '', options: [], choice: '', w: sq ? .03 : .3, h: sq ? .03 * layer.clientWidth / layer.clientHeight : .035, color: '#8c9fff' });
+        Object.assign(a, { type: 'field', ftype: f, name: '', options: [], choice: '',w: sq ? .03 : f === 'date' ? .2 : .3, rule: {}, h: sq ? .03 * layer.clientWidth / layer.clientHeight : .035, color: '#8c9fff' });
         this.list(n).push(a); App.setTool('select'); this.select(n, a.id); this.draw(n); App.designer.edit(n, a, true); return;
       }
       if (t === 'iconbtn') {
@@ -170,7 +170,7 @@ App.tools = {
           el.style.setProperty('--sc', App.sign.signerColors[(a.signer || 1) - 1] || '#d4b483'); el.classList.toggle('signed', !!a.img);
           el.innerHTML = a.img ? `<img src="${a.img}" alt="">` : a.kind === 'date' ? `<span>${a.text || 'Date'}</span>` : `<span>${a.kind === 'initials' ? 'Initials' : 'Sign here'}</span><b>S${a.signer || 1}</b>`;
         }
-        if (a.type === 'field') { el.classList.add('f-' + a.ftype); el.textContent = ['check', 'radio'].includes(a.ftype) ? '' : (a.name || 'field') + (a.ftype === 'drop' ? '  ▾' : ''); }
+        if (a.type === 'field') { el.classList.add('f-' + a.ftype); el.textContent = ['check', 'radio'].includes(a.ftype) ? '' : (a.name || 'field') + (a.ftype === 'drop' ? '  ▾' : a.ftype === 'date' ? '  ▦' : ''); }
         if (a.type === 'image') { const im = new Image(); im.src = a.src; im.draggable = false; el.appendChild(im); }
         if (a.type === 'rect' || a.type === 'ellipse') el.style.borderColor = a.color;
         if (a.type === 'text' || a.type === 'note') {
