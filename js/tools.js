@@ -104,6 +104,7 @@ App.tools = {
     document.body.classList.toggle('has-text', !!id && this.find(n, id).type === 'text');
     document.body.classList.toggle('has-link', !!id && ['link', 'iconbtn', 'field'].includes(this.find(n, id).type));
     document.body.classList.toggle('has-sig', !!id && this.find(n, id).type === 'sig');
+    document.body.classList.toggle('has-dup', !!id && ['text', 'note', 'rect', 'ellipse', 'arrow', 'highlight', 'image', 'field'].includes(this.find(n, id).type));
     if (id && this.find(n, id).type === 'sig') $('sigSigner').value = this.find(n, id).signer || 1;
     App.textPaint && App.textPaint();
     Object.keys(this.layers).forEach(k => this.draw(+k));
@@ -118,6 +119,18 @@ App.tools = {
     App.selected = null; document.body.classList.remove('has-sel', 'has-text', 'has-link', 'has-sig'); Object.keys(this.layers).forEach(k => this.draw(+k)); this.changed();
   },
 
+  duplicate() { // copy the selected mark a little to the side, and select the copy
+    if (!App.selected) return;
+    const { n, id } = App.selected, a = this.find(n, id);
+    if (!a || !['text', 'note', 'rect', 'ellipse', 'arrow', 'highlight', 'image', 'field'].includes(a.type)) return;
+    const b = JSON.parse(JSON.stringify(a)); b.id = this.uid();
+    const dx = a.x + (a.w || 0) + .02 > 1 ? -.02 : .02, dy = a.y + (a.h || 0) + .02 > 1 ? -.02 : .02;
+    b.x = a.x + dx; b.y = a.y + dy;
+    if (a.type === 'arrow') { b.x2 = a.x2 + dx; b.y2 = a.y2 + dy; }
+    if (a.type === 'field') { b.name = App.designer.uniqueName(a.name || 'Field', b); if (a.ftype === 'radio') b.choice = (a.choice || 'Option') + ' 2'; }
+    this.list(n).push(b); this.select(n, b.id); this.draw(n); this.changed();
+  },
+  
   setColor(c) {
     if (!App.selected) return;
     const a = this.find(App.selected.n, App.selected.id);
