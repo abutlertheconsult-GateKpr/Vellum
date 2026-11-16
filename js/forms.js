@@ -23,11 +23,19 @@ App.forms = {
         el.value = App.fields[name];
         el.onchange = () => { App.fields[name] = el.value; App.store.saveSoon(); };
       } else {
+        const rule = App.fieldRules[name];
         el = document.createElement(a.multiLine ? 'textarea' : 'input'); el.className = 'fld';
         if (App.fields[name] === undefined) App.fields[name] = String([].concat(a.fieldValue || '')[0] || '');
-        el.value = App.fields[name];
-        if (a.maxLen) el.maxLength = a.maxLen;
-        el.oninput = () => { App.fields[name] = el.value; App.store.saveSoon(); };
+        if (rule && rule.mode === 'date') { // a calendar picker; the PDF keeps the text in your chosen format
+          el.type = 'date'; el.value = App.rules.toIso(App.fields[name], rule.fmt);
+          el.oninput = () => { App.fields[name] = App.rules.fromIso(el.value, rule.fmt); App.store.saveSoon(); };
+        } else {
+          el.value = App.rules.clean(App.fields[name], rule);
+          if (a.maxLen) el.maxLength = a.maxLen;
+          if (rule && rule.max) el.maxLength = rule.max;
+          if (rule && rule.mode === 'digits') el.inputMode = 'numeric';
+          el.oninput = () => { const v = App.rules.clean(el.value, rule); if (v !== el.value) el.value = v; App.fields[name] = v; App.store.saveSoon(); };
+        }
       }
       if (a.fieldType !== 'Btn') el.style.fontSize = Math.max(8, Math.min(H * .66, 15 * App.scale)) + 'px';
       Object.assign(el.style, { left: L / vp.width * 100 + '%', top: T / vp.height * 100 + '%', width: W / vp.width * 100 + '%', height: H / vp.height * 100 + '%' });
