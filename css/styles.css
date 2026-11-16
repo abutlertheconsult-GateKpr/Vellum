@@ -223,3 +223,7 @@ body:not(.editing) .ann{touch-action:pan-x pan-y}
 /* duplicate button: only when a copyable mark is selected */
 #dupBtn{display:none}
 .has-sel.has-dup #dupBtn{display:grid}
+
+/* edit-text button: only when a text box or note is selected */
+#editTextBtn{display:none}
+.has-sel.has-write #editTextBtn{display:grid}
