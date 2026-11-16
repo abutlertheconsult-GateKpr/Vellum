@@ -106,3 +106,9 @@ App.setEditing = on => {
   if (!on) { App.tools.select(null); App.setTool(App.hasForms ? 'fill' : 'select'); }
 };
 $('editBtn').onclick = () => App.setEditing(!App.editing);
+
+// Duplicate the selected mark (button, or Ctrl+D / Cmd+D on a computer)
+$('dupBtn').onclick = () => App.tools.duplicate();
+addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'd' && App.selected && !e.target.isContentEditable && !/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) { e.preventDefault(); App.tools.duplicate(); }
+});
