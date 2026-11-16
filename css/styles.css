@@ -6,7 +6,7 @@
   --ease:cubic-bezier(.2,.8,.2,1);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;min-height:100%}
+html,body{margin:0;min-height:100%;overscroll-behavior-y:contain;touch-action:pan-x pan-y}
 body{font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--text);
   background:radial-gradient(1100px 650px at 50% -8%,#24201a 0,var(--bg) 62%) fixed}
 [hidden]{display:none!important}
