@@ -216,3 +216,6 @@ body.noscroll{overflow:hidden}
 #fAdv{margin-top:12px}
 #fAdv summary{cursor:pointer;color:var(--gold);font-weight:600;padding:6px 0}
 .fld[type=date]{padding:0 2px}
+
+/* locked mode: marks can't block scrolling or be dragged */
+body:not(.editing) .ann{touch-action:pan-x pan-y}
