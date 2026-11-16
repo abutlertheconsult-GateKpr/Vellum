@@ -112,3 +112,6 @@ $('dupBtn').onclick = () => App.tools.duplicate();
 addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'd' && App.selected && !e.target.isContentEditable && !/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) { e.preventDefault(); App.tools.duplicate(); }
 });
+
+// Edit text: put the cursor into the selected text box or note
+$('editTextBtn').onclick = () => { if (App.selected) App.tools.edit(App.selected.n, App.selected.id); };
