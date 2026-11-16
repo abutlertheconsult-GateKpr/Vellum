@@ -1,5 +1,5 @@
 // Makes the app work offline. Change CACHE's version number when you want every device to refresh its saved copy.
-const CACHE = 'vellum-v13';
+const CACHE = 'vellum-v14';
 const CORE = ['./', 'index.html', 'manifest.webmanifest', 'css/styles.css',
   'js/state.js', 'js/storage.js', 'js/viewer.js', 'js/tools.js', 'js/export.js', 'js/forms.js', 'js/fonts.js', 'js/security.js', 'js/designer.js', 'js/nav.js', 'js/copy.js', 'copy.html', 'js/history.js', 'js/templates.js', 'js/backup.js', 'js/sigpad.js', 'js/signprep.js', 'js/cloud.js', 'js/home.js', 'js/firebase-config.js', 'js/signer.js', 'sign.html', 'css/sigpad.css', 'css/signer.css', 'js/images.js', 'js/pages.js', 'js/textstyle.js', 'js/settings.js', 'js/gestures.js', 'js/app.js',
   'icons/icon-192.png', 'icons/logo.png', 'icons/icon-512.png'];
@@ -30,7 +30,7 @@ self.addEventListener('fetch', e => {
   e.respondWith((async () => {
     const c = await caches.open(CACHE);
     if (own) { // your own files: use the newest when online, saved copy when offline
-      try { const r = await fetch(e.request); c.put(e.request, r.clone()); return r; }
+      try { const r = await fetch(e.request, { cache: 'no-cache' }); c.put(e.request, r.clone()); return r; }
       catch { return (await c.match(e.request)) || (await c.match('index.html')); }
     }
     return (await c.match(e.request)) || fetch(e.request); // libraries: saved copy first
