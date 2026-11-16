@@ -53,3 +53,6 @@
     $('docname').textContent = App.name.replace(/\.pdf$/i, '') + '  ·  ' + cur + ' / ' + App.pdf.numPages;
   };
 })();
+
+// iPhone and iPad: stop the browser's own pinch-zoom of the whole page (Vellum zooms the document itself)
+['gesturestart', 'gesturechange', 'gestureend'].forEach(t => addEventListener(t, e => e.preventDefault(), { passive: false }));
