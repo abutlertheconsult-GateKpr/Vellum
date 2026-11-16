@@ -3,7 +3,10 @@
 App.setTool = t => {
   App.tool = t;
   document.body.dataset.tool = t;
-  document.querySelectorAll('button[data-tool]').forEach(b => b.classList.toggle('on', b.dataset.tool === t));
+ document.querySelectorAll('button[data-tool]').forEach(b => b.onclick = async () => {
+  if (b.dataset.tool === 'fill') { await App.designer.bake(); App.setEditing(false); } else App.setEditing(true); // picking an editing tool turns editing on
+  App.setTool(b.dataset.tool);
+});
   $('shapesTab').classList.toggle('on', ['rect', 'ellipse', 'arrow'].includes(t));
   ['shapes', 'img', 'link', 'field', 'more'].forEach(x => document.body.classList.remove('tray-' + x));
   $('linkTab').classList.toggle('on', ['link', 'iconbtn'].includes(t));
@@ -12,7 +15,10 @@ App.setTool = t => {
   $('moreTab').classList.toggle('on', ['note', 'rect', 'ellipse', 'arrow', 'link', 'iconbtn'].includes(t) || t.startsWith('f-'));
 };
 
-document.querySelectorAll('button[data-tool]').forEach(b => b.onclick = async () => { if (b.dataset.tool === 'fill') await App.designer.bake(); App.setTool(b.dataset.tool); });
+document.querySelectorAll('button[data-tool]').forEach(b => b.onclick = async () => {
+  if (b.dataset.tool === 'fill') { await App.designer.bake(); App.setEditing(false); } else App.setEditing(true); // picking an editing tool turns editing on
+  App.setTool(b.dataset.tool);
+});
 $('open').onclick = () => $('file').click();
 $('file').onchange = async e => {
   const f = e.target.files[0]; if (!f) return;
@@ -90,3 +96,13 @@ App.closeDoc = async () => {
 $('closeDocBtn').onclick = () => { $('menu').hidden = true; if (App.pdf) $('closeDlg').showModal(); };
 $('closeNo').onclick = () => $('closeDlg').close();
 $('closeYes').onclick = async () => { $('closeDlg').close(); await App.closeDoc(); };
+
+// Edit mode: marks stay locked until you turn editing on (or pick an editing tool).
+App.editing = false;
+App.setEditing = on => {
+  App.editing = on;
+  document.body.classList.toggle('editing', on);
+  $('editBtn').classList.toggle('on', on);
+  if (!on) { App.tools.select(null); App.setTool(App.hasForms ? 'fill' : 'select'); }
+};
+$('editBtn').onclick = () => App.setEditing(!App.editing);
