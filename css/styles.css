@@ -219,3 +219,7 @@ body.noscroll{overflow:hidden}
 
 /* locked mode: marks can't block scrolling or be dragged */
 body:not(.editing) .ann{touch-action:pan-x pan-y}
+
+/* duplicate button: only when a copyable mark is selected */
+#dupBtn{display:none}
+.has-sel.has-dup #dupBtn{display:grid}
