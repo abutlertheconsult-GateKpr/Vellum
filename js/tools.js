@@ -105,6 +105,7 @@ App.tools = {
     document.body.classList.toggle('has-link', !!id && ['link', 'iconbtn', 'field'].includes(this.find(n, id).type));
     document.body.classList.toggle('has-sig', !!id && this.find(n, id).type === 'sig');
     document.body.classList.toggle('has-dup', !!id && ['text', 'note', 'rect', 'ellipse', 'arrow', 'highlight', 'image', 'field'].includes(this.find(n, id).type));
+    document.body.classList.toggle('has-write', !!id && ['text', 'note'].includes(this.find(n, id).type));  
     if (id && this.find(n, id).type === 'sig') $('sigSigner').value = this.find(n, id).signer || 1;
     App.textPaint && App.textPaint();
     Object.keys(this.layers).forEach(k => this.draw(+k));
