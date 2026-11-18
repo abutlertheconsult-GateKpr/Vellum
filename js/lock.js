@@ -1,6 +1,6 @@
 // Access codes: scrambles a file with a code (AES-256) so the code is needed to open it.
 // The code is never stored with the file. A wrong code simply fails.
-window.Lock = {
+window.CodeLock = {
   ITER: 300000,
   b64(u) { let s = ''; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); },
   unb64(s) { const b = atob(s), u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; },
