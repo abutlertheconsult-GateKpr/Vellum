@@ -15,6 +15,7 @@
   const need = L.boxes.filter(b => b.kind !== 'date').length;
   $('hello').textContent = `Hi ${L.signerName}, ${L.ownerEmail || 'someone'} asked you to sign “${L.docName}”. There ${need === 1 ? 'is 1 place' : 'are ' + need + ' places'} to sign.`;
   only('intro');
+  $('codeRow').hidden = !L.locked; // only shown when the sender added an access code
   $('consent').onchange = e => $('start').disabled = !e.target.checked;
 
   const adopted = { signature: null, initials: null }, boxes = [];
@@ -30,11 +31,16 @@
   };
 
   $('start').onclick = async () => {
+    if (L.locked && !$('codeIn').value.trim()) { $('codeMsg').textContent = 'Please enter your access code.'; return; }
     $('start').disabled = true; $('start').textContent = 'Loading…';
     try {
       const cs = await Promise.all(Array.from({ length: L.chunks }, (_, i) => ref.collection('chunks').doc(String(i)).get()));
-      const b64 = cs.map(c => c.data().data).join(''), bin = atob(b64), bytes = new Uint8Array(bin.length);
+      let b64 = cs.map(c => c.data().data).join(''), bin = atob(b64), bytes = new Uint8Array(bin.length);
       for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      if (L.locked) { // the file is scrambled with the access code
+        try { bytes = await CodeLock.decrypt(bytes, $('codeIn').value, L.enc); }
+        catch (e) { $('start').disabled = false; $('start').textContent = 'Review and sign'; $('codeMsg').textContent = 'That code didn’t work. Check it and try again.'; return; }
+      }
       pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
       const pdf = await pdfjsLib.getDocument({ data: bytes }).promise, dpr = window.devicePixelRatio || 1;
       only('pages'); $('bar').hidden = false;
